@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="masthead text-center text-white">
+    <div class="masthead-content">
+        <div class="container">
+        <a href="{% url 'create-event' %}" class="btn btn-primary rounded-pill mt-5"type="submit">create an event</a>
+       
+        <div class="row mx-1 my-3"> 
+        <table class="table table-hover table-dark">
+          <thead>
+            <tr>
+              <th scope="col">event title</th>
+              <th scope="col">date</th>
+              <th scope="col">remaining seates</th>
+              <th scope="col">details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in events %}
+          
+            <tr>
+              <td scope="row">{{ event.title }}</td>
+              <td scope="row">{{ event.datetime }}</td>
+              <td scope="row">{{ event.seats }}</td>
+              <td scope="row"> <a href="{% url 'detail-event' event.id %}"><input class = "btn btn-primary rounded-pill" type="submit" value="view"></a></td>
+            </tr>
+        
+    
+
+            {% endfor %}
+            </tbody>
+            </table>
+        </div>
+            
+        </div>
+    </div>
+</header>
+{% endblock content %}
