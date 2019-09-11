@@ -1,24 +1,86 @@
 {% extends "base.html" %}
-
+{% load mathfilters %}
+{% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
 <header class="masthead text-center text-white">
-  <div class="masthead-content">
-    <div class="container">
-      <h1 class="masthead-heading mb-0">All the events,</h1>
-      <h2 class="masthead-subheading mb-0">You could ever want...</h2>
-      {% if request.user.is_anonymous %}
-        <a href="{% url 'signup' %}" class="btn btn-primary btn-xl rounded-pill mt-5">Sign up to find events!</a>
-      {% else %}
-        <a href="#" class="btn btn-primary btn-xl rounded-pill mt-5">Find events!</a>
-      {% endif %}
+    <div class="masthead-content">
+        <div class="container">
+            <h1 class="masthead-heading mb-0">All the events,</h1>
+            <h2 class="masthead-subheading mb-0">You could ever want...</h2>
+            {% if request.user.is_anonymous %}
+            <a href="{% url 'signup' %}" class="btn btn-primary btn-xl rounded-pill mt-5">Sign up to find events!</a>
+            {% else %}
+            <a href="#" class="btn btn-primary btn-xl rounded-pill mt-5">Find events!</a>
+            {% endif %}
+        </div>
     </div>
-  </div>
-  <div class="bg-circle-1 bg-circle"></div>
-  <div class="bg-circle-2 bg-circle"></div>
-  <div class="bg-circle-3 bg-circle"></div>
-  <div class="bg-circle-4 bg-circle"></div>
+    <div class="bg-circle-1 bg-circle"></div>
+    <div class="bg-circle-2 bg-circle"></div>
+    <div class="bg-circle-3 bg-circle"></div>
+    <div class="bg-circle-4 bg-circle"></div>
 </header>
-
-
-
+<div class="container-fluid">
+    <!-- SEARCH BAR-->
+    <div class="container">
+        <div class="row justify-content-center my-3 ">
+            <form class="col-6 mx-3" action="{% url 'home' %}" method="GET">
+                <div class="input-group mb-3 border border-warning">
+                    <input type="text" name='q' class="form-control" placeholder="Search for events by title, description, or organizer">
+                    <input type="submit" value="Search">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row mx-3">
+            {% for event in events %}
+            <!-- Event List - Button trigger modal -->
+            <div class="col-6 my-2 text-center">
+                {% if event.image %}
+                <img src="{{ event.image.url }}" class="card-img-top rounded-pill col-9" alt="Event picture">
+                {% else %}
+                <img src="{% static 'img/party01.jpg' %}" class="card-img-top rounded-pill col-9 img-fluid" alt="Default event picture">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title"> <a href="{% url 'detail-event' event.id %}">{{event.title}}</a></h5>
+                    <p class="card-text">{{event.location}}</p>
+                    <p class="card-text">{{event.datetime}}</p>
+                    <button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#{{event.id}}">Express Booking</button>
+                </div>
+            </div>
+            <!-- Event List - Modal -->
+            <div class="modal fade" id="{{event.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="exampleModalLabel"> {{event.title}} </h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h6>Organized by: {{event.owner|title}}</h6>
+                            {{event.description}}
+                            <br>
+                            <br>
+                            {{event.location}}
+                            <br>
+                            <h5>Remaining seats: {{event.remaining_seats}}</h5>
+                            {% if event.remaining_seats < 1 %} <input class="btn btn-secondary rounded-pill" disabled type="submit" value="Full">
+                                {% else %}
+                                <form action="{% url 'home' event.id %}" method="POST">
+                                    {% csrf_token %}
+                                    {{form|crispy}}
+                                    <input class="btn btn-secondary rounded-pill" type="submit" value="Book">
+                                </form>
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

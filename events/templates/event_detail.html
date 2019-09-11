@@ -1,19 +1,88 @@
 {% extends "base.html" %}
-
+{% load static %}
+{% load mathfilters %}
+{% load crispy_forms_tags %}
 {% block content %}
-	<div class="row">
-	<div class="col-12">
-	<div class="jumbotron bg-warning">
-	  <h1 class="display-4">{{ event.title }}</h1>
-	  <p class="lead">{{ event.description }}</p>
-	  <p class="lead">{{ event.location }}</p>
-	  <p class="lead">{{ event.datetime }}</p>
-	  <hr class="my-4">
-	  <h5>remaining seats: {{ event.seats }}</h5>
-	  <p>{{ event.created_on }}</p>
-	  <a class="btn btn-primary btn-lg" href="{% url 'edit-event' event.id %}" role="button">edit</a>
-	</div>
-	</div>
-	</div>
-	
+<br><br><br>
+<div class="row justify-content-md-center">
+    <div class="mb-3 text-center col-6">
+        {% if event.image %}
+        <img src="{{ event.image.url }}" class="img-fluid card-img-top rounded-pill col-8" alt="event picture">
+        {% else %}
+        <img src="{% static 'img/party01.jpg' %}" class="card-img-top rounded-pill col-8" alt="default event picture">
+        {% endif %}
+        <div class="card-body text-center">
+            <div class="card text-center">
+                <div class="card-body text-center">
+                    <h4 class="card-title">{{ event.title }}</h4>
+                    <a href="{% url 'follow' request.user.id %}"><h5 class="card-title">Organized by: {{ event.owner|title }}</h5></a>
+                    <p class="card-text">{{ event.description }}</p>
+                    <p class="card-text">{{ event.location }}</p>
+                    <p class="card-text">Remaining seats: <b>{{event.remaining_seats}}</b> </p>
+                    <p class="card-text"><small class="text-muted">{{ event.created_on }}</small></p>
+                    {% if request.user == event.owner %}
+                    <a class="btn btn-primary mx-1" href="{% url 'edit-event' event.id %}" role="button">
+                        Edit
+                    </a></h4>
+                    {% else %}
+                    <form action="{% url 'detail-event' event.id %}" method="POST">
+                        {% csrf_token %}
+                        {{form|crispy}}
+                        <input class="btn btn-primary btn-lg btn-block rounded-pill" type="submit" value="Book">
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if request.user == event.owner %}
+<div class="row justify-content-md-center">
+    <!-- BOOKINGS FOR THIS EVENT  -->
+    <div class="row mx-1 my-3">
+        <table class="table table-hover table-dark text-center">
+            <h3>People Who Booked This Event</h3>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Seats Booked</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in event.bookings.all %}
+                <tr>
+                    <td scope="row">{{ booking.owner }}</td>
+                    <td scope="row">{{ booking.seats }}</td>
+                    {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+<!-- TO BE DELETED
+    <div class="col-8">
+        <div class=" mb-3">
+            {% if event.image %}
+            <img src="{{ event.image.url }}" class="card-img-top rounded-pill" alt="...">
+            {% else %}
+            <img src="{% static 'img/party01.jpg' %}" class="card-img-top rounded-pill" alt="...">
+            {% endif %}
+          <div class="card-body">
+            <h4 class="card-title">{{ event.title }}</h4>
+            <h5 class="card-title">organized by: {{ event.owner }}</h5>
+            <p class="card-text">{{ event.description }}</p>
+            <p class="card-text">{{ event.location }}</p>
+            <p class="card-text">remaining seats: {{event.remaining_seats}}  </p>
+            <p class="card-text"><small class="text-muted">{{ event.created_on }}</small></p>
+            {% if request.user == event.owner %}
+
+            <a class="btn btn-primary btn-lg" href="{% url 'edit-event' event.id %}" role="button">
+                edit
+            </a>
+
+            {% endif %}
+
+          </div>
+        </div>
+    </div> -->
 {% endblock content %}

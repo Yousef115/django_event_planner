@@ -1,38 +1,88 @@
 {% extends "base.html" %}
-
+{% load mathfilters %}
 {% block content %}
 <header class="masthead text-center text-white">
     <div class="masthead-content">
         <div class="container">
-        <a href="{% url 'create-event' %}" class="btn btn-primary rounded-pill mt-5"type="submit">create an event</a>
+        <a href="{% url 'create-event' %}">
+            <input class = "btn btn-warning rounded-pill" type="submit" value="create an event">
+        </a>
        
         <div class="row mx-1 my-3"> 
         <table class="table table-hover table-dark">
+          <h3>Organized Events</h3>
           <thead>
             <tr>
-              <th scope="col">event title</th>
-              <th scope="col">date</th>
-              <th scope="col">remaining seates</th>
-              <th scope="col">details</th>
+              <th scope="col">Event Title</th>
+              <th scope="col">Date</th>
+              <th scope="col">Remaining Seats</th>
+              <th scope="col">Details</th>
             </tr>
           </thead>
           <tbody>
-            {% for event in events %}
+            {% for event in organized_events %}
           
             <tr>
               <td scope="row">{{ event.title }}</td>
               <td scope="row">{{ event.datetime }}</td>
-              <td scope="row">{{ event.seats }}</td>
+              <td scope="row"> {{event.remaining_seats}} </td>
               <td scope="row"> <a href="{% url 'detail-event' event.id %}"><input class = "btn btn-primary rounded-pill" type="submit" value="view"></a></td>
             </tr>
-        
-    
+            {% endfor %}
+            </tbody>
+            </table>
+        </div>
 
+        <div class="row mx-1 my-3"> 
+        <table class="table table-hover table-dark">
+          <h3>Booked Events</h3>
+          <thead>
+            <tr>
+              <th scope="col">Event Title</th>
+              <th scope="col">Date</th>
+              <th scope="col">Booked Seats</th>
+              <th scope="col">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in booked_events %}
+          
+            <tr>
+              <td scope="row">{{ event.event.title }}</td>
+              <td scope="row">{{ event.event.datetime }}</td>
+              <td scope="row"> {{event.seats}} </td>
+              <td scope="row"> <a href="{% url 'detail-event' event.event.id %}"><input class = "btn btn-primary rounded-pill" type="submit" value="view"></a></td>
+            </tr>
             {% endfor %}
             </tbody>
             </table>
         </div>
             
+        <div class="row mx-1 my-3"> 
+        <table class="table table-hover table-dark">
+          <h3>Past Events</h3>
+          <thead>
+            <tr>
+              <th scope="col">Event Title</th>
+              <th scope="col">Date</th>
+              <th scope="col">Booked Seats</th>
+              <th scope="col">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in past_books %}
+          
+            <tr>
+              <td scope="row">{{ event.event.title }}</td>
+              <td scope="row">{{ event.event.datetime }}</td>
+              <td scope="row"> {{event.seats}} </td>
+              <td scope="row"> <a href="{% url 'detail-event' event.event.id %}"><input class = "btn btn-primary rounded-pill" type="submit" value="view"></a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+        </div>
+
         </div>
     </div>
 </header>
