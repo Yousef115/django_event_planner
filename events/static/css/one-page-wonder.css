@@ -24,6 +24,10 @@ h6 {
   background-color: #000 !important;
 }
 
+.bg-blue {
+  background-color: #b5cfe1 !important;
+}
+
 .rounded-pill {
   border-radius: 5rem;
 }
@@ -151,4 +155,8 @@ header.masthead .bg-circle-4 {
 
 .btn-secondary:focus {
   box-shadow: 0 0 0 0.2rem rgba(255, 106, 0, 0.5);
+}
+
+.text-black {
+  color: #000000;
 }

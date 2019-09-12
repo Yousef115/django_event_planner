@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from django.dispatch import receiver
+from django.db.models.signals import post_save 
 from django.contrib.auth.models import User
 
 class Event(models.Model):
@@ -7,7 +9,8 @@ class Event(models.Model):
 	title = models.CharField(max_length= 150)
 	description = models.TextField()
 	location = models.TextField()
-	datetime = models.DateTimeField()
+	date = models.DateField()
+	time = models.TimeField()
 	seats = models.PositiveSmallIntegerField()
 	# booked_seats = models.PositiveSmallIntegerField()
 	created_on = models.DateTimeField(auto_now=True)
@@ -37,8 +40,18 @@ class Booking(models.Model):
 
 class Profile(models.Model):
 	user = models.OneToOneField(User, on_delete = models.CASCADE)
-	following = models.ManyToManyField(User, null=True, blank=True, related_name='followers')
-	followers = models.ManyToManyField(User, null=True, blank=True, related_name='following')
+	following = models.ManyToManyField(User, blank=True, related_name='followers')
+	followers = models.ManyToManyField(User, blank=True, related_name='following')
 	bio = models.TextField(null=True, blank=True)
 	image = models.ImageField(null=True, blank=True)
+
+	def __str__(self):
+		return str(self.user)
+
+
+def create_profile(sender, instance, created, **kwargs):
+	if created:
+		user_profile = Profile.objects.create(user = instance)
+
+post_save.connect(create_profile, sender = User)
 

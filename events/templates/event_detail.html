@@ -15,9 +15,10 @@
             <div class="card text-center">
                 <div class="card-body text-center">
                     <h4 class="card-title">{{ event.title }}</h4>
-                    <a href="{% url 'follow' request.user.id %}"><h5 class="card-title">Organized by: {{ event.owner|title }}</h5></a>
+                    <a href="{% url 'profile' event.owner.id %}"><h5 class="card-title">Organized by: {{ event.owner|title }}</h5></a>
                     <p class="card-text">{{ event.description }}</p>
                     <p class="card-text">{{ event.location }}</p>
+                    <p class="card-text">{{ event.date }} {{ event.time }}</p>
                     <p class="card-text">Remaining seats: <b>{{event.remaining_seats}}</b> </p>
                     <p class="card-text"><small class="text-muted">{{ event.created_on }}</small></p>
                     {% if request.user == event.owner %}

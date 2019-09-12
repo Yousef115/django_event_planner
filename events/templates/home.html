@@ -45,7 +45,7 @@
                 <div class="card-body">
                     <h5 class="card-title"> <a href="{% url 'detail-event' event.id %}">{{event.title}}</a></h5>
                     <p class="card-text">{{event.location}}</p>
-                    <p class="card-text">{{event.datetime}}</p>
+                    <p class="card-text">{{event.date}} {{event.time}}</p>
                     <button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#{{event.id}}">Express Booking</button>
                 </div>
             </div>
@@ -65,6 +65,8 @@
                             <br>
                             <br>
                             {{event.location}}
+                            <br>
+                            {{event.date}} {{event.time}}
                             <br>
                             <h5>Remaining seats: {{event.remaining_seats}}</h5>
                             {% if event.remaining_seats < 1 %} <input class="btn btn-secondary rounded-pill" disabled type="submit" value="Full">

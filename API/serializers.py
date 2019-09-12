@@ -38,11 +38,11 @@ class EventDetailsSerializer(serializers.ModelSerializer):
 		)
 	class Meta:
 		model = Event
-		fields = ["title", "owner", "description", "location", "datetime", 
+		fields = ["title", "owner", "description", "location", "date", "time", 
 		"seats", "book",]
 
 	def get_owner(self, obj):
-		return "%s - (%s %s)"%(obj.owner.username, obj.owner.first_name, obj.owner.last_name)
+		return "%s"%(obj.owner.username)
 	
 
 class EventOwnerDetailSerializer(serializers.ModelSerializer):
@@ -52,16 +52,16 @@ class EventOwnerDetailSerializer(serializers.ModelSerializer):
 		lookup_field = "id",
 		lookup_url_kwarg = "event_id"
 		)
-	booking_owners = serializers.SerializerMethodField() 
+	Attendees = serializers.SerializerMethodField() 
 	class Meta:
 		model = Event
-		fields = ["title", "owner", "description", "location", "datetime", 
-		"seats", "book", "booking_owners",]
+		fields = ["title", "owner", "description", "location", "date", "time", 
+		"seats", "book", "Attendees",]
 
 	def get_owner(self, obj):
-		return "%s - (%s %s)"%(obj.owner.username, obj.owner.first_name, obj.owner.last_name)
+		return "%s"%(obj.owner.username)
 	
-	def get_booking_owners(self, obj):
+	def get_Attendees(self, obj):
 		bookings = obj.bookings.all()
 		print ("\n\n Bookings: ", bookings)
 		return PastBookingDetailsSerializer(bookings, many=True).data
@@ -69,7 +69,7 @@ class EventOwnerDetailSerializer(serializers.ModelSerializer):
 class CreateEventSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Event
-		fields = ["title", "description", "datetime", "location", "seats", ]
+		fields = ["title", "description", "date", "time", "location", "seats", ]
 
 class BookEventSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -85,7 +85,6 @@ class BookingDetailsSerializer(serializers.ModelSerializer):
 		fields = ['event_owner', "event", "seats",]
 
 	def get_event_owner(self, obj):
-		print ("\n\n\n SELF IS: ", self, "\n\n\n OBJECT IS:", obj)
 		return "%s "%(obj.event.owner.username)
 		return "OK"
 
@@ -103,9 +102,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	def get_past_bookings(self, obj):
 		today = datetime.today()
-		print(obj)
 		bookings = Booking.objects.filter(owner_username__contains=(obj))
-		print("aaaaaaaaaaaaaaaaa", bookings)
 		return PastBookingDetailsSerializer(bookings, many=True).data
 
 

@@ -24,7 +24,7 @@
           
             <tr>
               <td scope="row">{{ event.title }}</td>
-              <td scope="row">{{ event.datetime }}</td>
+              <td scope="row">{{ event.date }} {{ event.time }}</td>
               <td scope="row"> {{event.remaining_seats}} </td>
               <td scope="row"> <a href="{% url 'detail-event' event.id %}"><input class = "btn btn-primary rounded-pill" type="submit" value="view"></a></td>
             </tr>
@@ -49,7 +49,7 @@
           
             <tr>
               <td scope="row">{{ event.event.title }}</td>
-              <td scope="row">{{ event.event.datetime }}</td>
+              <td scope="row">{{ event.event.date }} {{ event.event.time }}</td>
               <td scope="row"> {{event.seats}} </td>
               <td scope="row"> <a href="{% url 'detail-event' event.event.id %}"><input class = "btn btn-primary rounded-pill" type="submit" value="view"></a></td>
             </tr>
@@ -74,7 +74,7 @@
           
             <tr>
               <td scope="row">{{ event.event.title }}</td>
-              <td scope="row">{{ event.event.datetime }}</td>
+              <td scope="row">{{ event.event.date }} {{ event.event.time }}</td>
               <td scope="row"> {{event.seats}} </td>
               <td scope="row"> <a href="{% url 'detail-event' event.event.id %}"><input class = "btn btn-primary rounded-pill" type="submit" value="view"></a></td>
             </tr>

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<header class="masthead text-center text-white">
+    <div class="masthead-content">
+        <div class="row justify-content-center">
+            <div class="card bg-grey outline-warning mb-3" style="max-width: 1000px;">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img class="img-fluid img-profile rounded-circle m-5" src="{% static 'img/01.jpg' %}" alt="pretty face">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h1 class="card-title"> <br><br> {{user}}
+                                {% if request.user == user %} <!--EDIT PROFILE BUTTON -->
+                                    <a href="{% url 'edit-profile' request.user.id %}">
+                                        <input class="btn btn-warning rounded-pill" type="submit" value="Edit profile">
+                                    </a>
+                                {% else %} <!--FOLLOW BUTTON -->
+                                    <a href="{% url 'follow' user.id %}">
+                                        <input class="btn btn-warning rounded-pill" type="submit" value="Follow">
+                                    </a>
+                                {% endif %}
+                            </h1>
+                            <div class="row justify-content-center">
+                                <h4 class="card-text col-6"> <br>following: {{following}}</h4>
+                                <h4 class="card-text col-6"> <br>followers: {{followers}}</h4>
+                            </div>
+                            <div class="container align-items-start">
+                                <p class="card-text px-5"></p>
+                                <p class="card-text px-5">Bio: <small>{{user.profile.bio}} </small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock content %}
+<!--
+<header class="masthead text-center text-white">
+    <div class="masthead-content">
+    </div>
+
+<div class="container bg-blue text-white border border-dark my-4">
+    <div class="row my-3">
+        <div class="col-6 mb-2">
+            <img class="img-fluid img-profile rounded-circle" src="{% static 'img/01.jpg' %}" alt="pretty face">
+        </div>
+        <div class="row mx-4">
+            <h1 class="col-12"> <br> <br>{{user}}</h1>
+            <h3 class="col-6"> Following: <br> {{following}}</h3>
+            <h3 class="col-6"> Follower: <br> {{followers}}</h3>
+        </div>
+    </div>
+    <div class="row mt-3 pb-5">
+        <h1 class="col-2">My bio:</h1>
+        <div class="col-9 pt-2 border border-secondary rounded">
+            <p>{{user.profile.bio}}</p>
+        </div>
+    </div>
+</div>
+</header>
+-->

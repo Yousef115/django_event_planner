@@ -19,6 +19,10 @@ class EventsList(ListAPIView):
 	filter_backends = [SearchFilter,]
 	search_fields = ['owner__username']
 
+	def get_queryset(self):
+		today = datetime.today()
+		return Event.objects.filter(date__gte=today)
+
 #OK
 class EventDetails(RetrieveAPIView):
 	queryset = Event.objects.all()

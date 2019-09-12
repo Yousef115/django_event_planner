@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import ( Login, Logout, Signup, Home, dashboard, create_event, 
-	EventDetail, edit_event, follow)
+	EventDetail, edit_event, follow, UserProfile, edit_profile)
 
 urlpatterns = [
 	path('', Home.as_view(), name='home'),
@@ -15,6 +15,8 @@ urlpatterns = [
     path('event/<int:event_id>/edit/', edit_event , name='edit-event'),
     path('event/<int:event_id>/detail/', EventDetail.as_view() , name='detail-event'),
 
+    path('profile/<int:user_id>/', UserProfile.as_view() , name='profile'),
+    path('profile/<int:user_id>/edit/', edit_profile , name='edit-profile'),
     path('profile/<int:user_id>/follow/', follow , name='follow'),
 
 ]

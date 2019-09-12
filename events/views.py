@@ -1,23 +1,24 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
 
 from django.views import View
 from .models import Event, Booking, Profile
-from .forms import UserSignup, UserLogin , EventForm, BookingForm
+from .forms import UserSignup, UserLogin , EventForm, BookingForm, ProfileForm
 
 class Home(View):
     form_class = BookingForm
     template_name = 'home.html'
 
     def get(self, request, *args, **kwargs):
-        events = Event.objects.filter(datetime__gte = timezone.now())
+        events = Event.objects.filter(date__gte = timezone.now())
         query = request.GET.get("q")
         if query:
             events = Event.objects.filter(
-            Q(datetime__gte = timezone.now()),
+            Q(date__gte = timezone.now()),
             Q(title__icontains=query)|
             Q(description__icontains=query)|
             Q(owner__username__icontains=query)
@@ -51,6 +52,8 @@ class Signup(View):
     template_name = 'signup.html'
 
     def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect ('home')
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
 
@@ -101,8 +104,8 @@ class Logout(View):
 
 
 def dashboard(request):
-    booked = request.user.booked_events.filter(event__datetime__gte=timezone.now())
-    past_books = request.user.booked_events.filter(event__datetime__lt=timezone.now())
+    booked = request.user.booked_events.filter(event__date__gte=timezone.now())
+    past_books = request.user.booked_events.filter(event__date__lt=timezone.now())
     organized_events = request.user.created_events.all()
     context = {
         'organized_events': organized_events,
@@ -136,8 +139,8 @@ class EventDetail(View):
         bookings = Booking.objects.filter(event=event)
         form = self.form_class()
         context = {
-            'event' : event,
-            'form' : form,
+            'event': event,
+            'form': form,
         }
         return render(request, self.template_name, context)
 
@@ -172,17 +175,56 @@ def edit_event(request, event_id):
             return redirect('dashboard')
 
     context = {
-        'form' : form,
-        'event' : event_obj,
+        'form': form,
+        'event': event_obj,
     }
     return render(request, 'edit_event.html', context)
 
 
 def follow(request, user_id):
     if request.user.is_anonymous:
-        return redirect('home')
-    profile = Profile.objects.get(id=user_id)
-    profile.followers = request.user
-    messages.success(request, "You have followed blah")
-    print ("No IF STATEMENT!")
+        return redirect('login')
+    # user is the organizer profile to be followed
+    user = User.objects.get(id=user_id)
+    # logged_user is the user who wants to follow the organizer 
+    logged_user = request.user
+    user.save()
+    # add the organizer to logged in users following list
+    logged_user.profile.following.add(user)
+    # add logged in user to the organizer follower list
+    user.profile.followers.add(logged_user)
+    msg = "You have followed %s" %(user.username)
+    messages.success(request, msg)
     return redirect ('dashboard')
+
+class UserProfile(View):
+   template_name = 'profile.html'
+   def get(self, request, *args, **kwargs):
+        the_user = User.objects.get(id = kwargs['user_id'])
+        followers = the_user.profile.followers.count()
+        following = the_user.profile.following.count()
+        context = {
+           'user': the_user,
+           'followers': followers,
+           'following': following,
+        }
+        # print("Followers: %s\nFollowing: %s" %(followers, following))
+        return render(request, self.template_name, context)
+
+
+def edit_profile(request, user_id):
+    profile_obj = Profile.objects.get(user_id = user_id)
+    if request.user != profile_obj.user:
+        return redirect('home')
+    form= ProfileForm(instance = profile_obj)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', user_id)
+
+    context = {
+        'form': form,
+        'profile': profile_obj,
+    }
+    return render(request, 'edit_profile.html', context)
